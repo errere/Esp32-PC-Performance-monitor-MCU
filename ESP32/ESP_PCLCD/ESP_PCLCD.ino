@@ -523,52 +523,122 @@ void dataToLEDDate()
       }
 
       //GPU_Used
-      usedCodex(LEDDigSingal, GPU_Used);
-      for (uint8_t i = 0; i < 4; i++)
+      if (IsHave_GPU_Used == 1)
       {
-            LEDDig[i][0] = LEDDigSingal[i];
+            usedCodex(LEDDigSingal, GPU_Used);
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][0] = LEDDigSingal[i];
+            }
+      }
+      else
+      {
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][0] = 0;
+            }
       }
 
       //CPU_Used
-      usedCodex(LEDDigSingal, CPU_Used);
-      for (uint8_t i = 0; i < 4; i++)
+      if (IsHave_CPU_Used == 1)
       {
-            LEDDig[i][1] = LEDDigSingal[i];
+            usedCodex(LEDDigSingal, CPU_Used);
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][1] = LEDDigSingal[i];
+            }
+      }
+      else
+      {
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][1] = 0;
+            }
       }
 
       //Memory_Used
-      usedCodex(LEDDigSingal, Memory_Used);
-      for (uint8_t i = 0; i < 4; i++)
+      if (IsHave_Memory_Used == 1)
       {
-            LEDDig[i][2] = LEDDigSingal[i];
+            usedCodex(LEDDigSingal, Memory_Used);
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][2] = LEDDigSingal[i];
+            }
+      }
+      else
+      {
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][2] = 0;
+            }
       }
 
       //Volt_CPU_Core
-      VoltCodex(LEDDigSingal, Volt_CPU_Core);
-      for (uint8_t i = 0; i < 4; i++)
+      if (IsHave_Volt_CPU_Core == 1)
       {
-            LEDDig[i][3] = LEDDigSingal[i];
+            VoltCodex(LEDDigSingal, Volt_CPU_Core);
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][3] = LEDDigSingal[i];
+            }
+      }
+      else
+      {
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][3] = 0;
+            }
       }
 
-      //Volt_CPU_Core
-      VoltCodex(LEDDigSingal, Volt_GPU_Core);
-      for (uint8_t i = 0; i < 4; i++)
+      //Volt_GPU_Core
+      if (IsHave_Volt_GPU_Core == 1)
       {
-            LEDDig[i][4] = LEDDigSingal[i];
+            VoltCodex(LEDDigSingal, Volt_GPU_Core);
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][4] = LEDDigSingal[i];
+            }
+      }
+      else
+      {
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][4] = 0;
+            }
       }
 
       //Pwr_CPU_Package
-      pwrCodex(LEDDigSingal, Pwr_CPU_Package);
-      for (uint8_t i = 0; i < 4; i++)
+      if (IsHave_Pwr_CPU_Package == 1)
       {
-            LEDDig[i][5] = LEDDigSingal[i];
+            pwrCodex(LEDDigSingal, Pwr_CPU_Package);
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][5] = LEDDigSingal[i];
+            }
+      }
+      else
+      {
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][5] = 0;
+            }
       }
 
       //Pwr_Battery
-      pwrCodex(LEDDigSingal, abs(Pwr_Battery));
-      for (uint8_t i = 0; i < 4; i++)
+      if (IsHave_Pwr_Battery == 1)
       {
-            LEDDig[i][6] = LEDDigSingal[i];
+            pwrCodex(LEDDigSingal, abs(Pwr_Battery));
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][6] = LEDDigSingal[i];
+            }
+      }
+      else
+      {
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                  LEDDig[i][6] = 0;
+            }
       }
 }
 
