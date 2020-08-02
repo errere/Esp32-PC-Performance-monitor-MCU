@@ -104,6 +104,8 @@ String JsonTakeVal;
 
 /*==========LED==========*/
 
+const uint8_t BRIGHT_COMMAND[8] = {0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f};
+
 const uint8_t DIGMAP[] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71};
 const uint8_t BarMap[] = {1, 3, 5};
 
@@ -112,18 +114,21 @@ const uint16_t tempLED[10] = {20, 25, 30, 40, 50, 60, 80, 100, 110, 120};
 
 uint8_t LED_Buffer[15] = {0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8f, 0x0a};
 
-uint8_t DispCounter = 0;
+int8_t DispCounter = 0;
 uint8_t LEDBarData[3] = {0};   //bar1,bar2,bar3
 uint8_t LEDDig[4][7] = {{0}};  //{Dig1,Dig2,Dig3,Dig4}
 uint8_t LEDDigSingal[4] = {0}; //Dig1,Dig2,Dig3,Dig4
 uint8_t LEDXStu[3] = {0};      //Dig1,Dig2,Dig3
+
+uint8_t Bright = 7;//0->7
+uint8_t autoCounter = 1;
 
 /*================================================================================func================================================================================*/
 
 void TaskSerialGetJson(void *pvParameters);
 void TaskDecodeJson(void *pvParameters);
 void TaskDisplay(void *pvParameters);
-//void TaskCounter(void *pvParameters); 
+void TaskKeyScan(void *pvParameters); 
 
 uint8_t JsonBufTodata();
 
@@ -213,7 +218,7 @@ void setup()
       xTaskCreatePinnedToCore(TaskSerialGetJson, "JsonGet", 4096, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
       xTaskCreatePinnedToCore(TaskDecodeJson, "JsonDecode", 4096, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
       xTaskCreatePinnedToCore(TaskDisplay, "Display", 1024, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
-      //xTaskCreatePinnedToCore(TaskCounter, "TaskCounter", 1024, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
+      xTaskCreatePinnedToCore(TaskKeyScan, "TaskKeyScan", 1024, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
 }
 
 void loop()
@@ -330,11 +335,21 @@ void TaskDisplay(void *pvParameters)
 
                   LEDXwrite(tempx, DispCounter);
 
+                  if (Bright > 7)
+                        Bright = 7;
+                  if (Bright < 0)
+                        Bright = 0;
+
+                  LED_Buffer[13] = BRIGHT_COMMAND[Bright];
+
                   LED_SendDate(LED_Buffer);
 
-                  DispCounter++;
-                  if (DispCounter > 6)
-                        DispCounter = 0;
+                  if (autoCounter == 1)
+                  {
+                        DispCounter++;
+                        if (DispCounter > 6)
+                              DispCounter = 0;
+                  }
 
                   //xSemaphoreGive(LEDReadySemaphore);
 
@@ -344,17 +359,70 @@ void TaskDisplay(void *pvParameters)
       } //for
 }
 
-// void TaskCounter(void *pvParameters)
-// {
-//       (void)pvParameters;
-//       for (;;) // A Task shall never return or exit.
-//       {
-//             DispCounter++;
-//             if (DispCounter > 6)
-//                   DispCounter = 0;
-//             vTaskDelay(1000);
-//       }
-// }
+void TaskKeyScan(void *pvParameters)
+{
+      (void)pvParameters;
+      for (;;) // A Task shall never return or exit.
+      {
+            if (digitalRead(33) == 0)
+            { //bright
+                  vTaskDelay(10);
+                  if (digitalRead(33) == 0)
+                  {
+                        while (digitalRead(33) == 0)
+                        {
+                              vTaskDelay(1);
+                        }
+                        Bright++;
+                        if (Bright > 7)
+                              Bright = 0;
+                  }
+            }
+            if (digitalRead(25) == 0)
+            { //UP
+                  if (digitalRead(25) == 0)
+                  {
+                        while (digitalRead(25) == 0)
+                        {
+                              vTaskDelay(1);
+                        }
+                        autoCounter = 0;
+                        DispCounter++;
+                        if (DispCounter > 6)
+                              DispCounter = 0;
+                  }
+            }
+
+            if (digitalRead(26) == 0)
+            { //DOWN
+                  if (digitalRead(26) == 0)
+                  {
+                        while (digitalRead(26) == 0)
+                        {
+                              vTaskDelay(1);
+                        }
+                        autoCounter = 0;
+                        DispCounter--;
+                        if (DispCounter < 0)
+                              DispCounter = 6;
+                  }
+            }
+
+            if (digitalRead(27) == 0)
+            { //autoCounter
+                  if (digitalRead(27) == 0)
+                  {
+                        while (digitalRead(27) == 0)
+                        {
+                              vTaskDelay(1);
+                        }
+                        autoCounter = 1;
+                  }
+            }
+
+            vTaskDelay(1);
+      }
+}
 
 /*================================================================================logic================================================================================*/
 
@@ -482,6 +550,16 @@ uint8_t JsonBufTodata()
       } //OK
       else
       {
+            IsHave_Temp_CPU = 0;
+            IsHave_Temp_GPUDiode = 0;
+            IsHave_Volt_CPU_Core = 0;
+            IsHave_Volt_GPU_Core = 0;
+            IsHave_Pwr_CPU_Package = 0;
+            IsHave_Pwr_Battery = 0;
+            IsHave_CPU_Clock = 0;
+            IsHave_CPU_Used = 0;
+            IsHave_Memory_Used = 0;
+            IsHave_GPU_Used = 0;
       } //ERR
       //SerialBT.println(res.c_str());
       return 1;
