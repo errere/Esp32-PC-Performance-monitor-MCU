@@ -35,8 +35,9 @@ const uint8_t DBG_LED_PKG[] = {0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0
 uint8_t ii = 0;
 uint8_t jj = 0;
 
+/*==========dat==========*/
+std::map<String, String> all_data_map;
 /*==========sys==========*/
-std::map<String, String> sys_date_map;
 
 const String ID_SYS_CPU_Clock = "SCPUCLK";
 const String ID_SYS_CPU_Used = "SCPUUTI";
@@ -54,7 +55,6 @@ int8_t Memory_Used = 0;
 int8_t GPU_Used = 0;
 
 /*==========temp==========*/
-std::map<String, String> temp_date_map;
 
 const String ID_TEMP_Temp_CPU = "TCPU";
 const String ID_TEMP_Temp_GPUDiode = "TGPU1DIO";
@@ -66,7 +66,6 @@ int16_t Temp_CPU = 0;
 int16_t Temp_GPUDiode = 0;
 
 /*==========volt==========*/
-std::map<String, String> volt_date_map;
 
 const String ID_VOLT_Volt_CPU_Core = "VCPU";
 const String ID_VOLT_Volt_GPU_Core = "VGPU1";
@@ -78,7 +77,6 @@ double Volt_CPU_Core = 0.0;
 double Volt_GPU_Core = 0.0;
 
 /*==========pwr==========*/
-std::map<String, String> pwr_date_map;
 
 const String ID_PWR_Pwr_CPU_Package = "PCPUPKG";
 const String ID_PWR_Pwr_Battery = "PBATTCHR";
@@ -441,7 +439,7 @@ uint8_t JsonBufTodata()
             {
                   JsonTakeID = obj["Result"]["root"]["sys"][i]["id"].as<String>();
                   JsonTakeVal = obj["Result"]["root"]["sys"][i]["value"].as<String>();
-                  sys_date_map[JsonTakeID] = JsonTakeVal;
+                  all_data_map[JsonTakeID] = JsonTakeVal;
             }
 
             //temp
@@ -452,7 +450,7 @@ uint8_t JsonBufTodata()
                   // SerialBT.println(i);
                   // SerialBT.println(JsonTakeID.c_str());
                   // SerialBT.println(JsonTakeVal.c_str());
-                  temp_date_map[JsonTakeID] = JsonTakeVal;
+                  all_data_map[JsonTakeID] = JsonTakeVal;
             }
 
             //volt
@@ -460,7 +458,7 @@ uint8_t JsonBufTodata()
             {
                   JsonTakeID = obj["Result"]["root"]["volt"][i]["id"].as<String>();
                   JsonTakeVal = obj["Result"]["root"]["volt"][i]["value"].as<String>();
-                  volt_date_map[JsonTakeID] = JsonTakeVal;
+                  all_data_map[JsonTakeID] = JsonTakeVal;
             }
 
             //pwr
@@ -468,7 +466,7 @@ uint8_t JsonBufTodata()
             {
                   JsonTakeID = obj["Result"]["root"]["pwr"][i]["id"].as<String>();
                   JsonTakeVal = obj["Result"]["root"]["pwr"][i]["value"].as<String>();
-                  pwr_date_map[JsonTakeID] = JsonTakeVal;
+                  all_data_map[JsonTakeID] = JsonTakeVal;
             }
 
             //string to Number
@@ -479,71 +477,71 @@ uint8_t JsonBufTodata()
             IsHave_Memory_Used = 0;
             IsHave_GPU_Used = 0;
 
-            if (sys_date_map[ID_SYS_CPU_Clock] != "")
+            if (all_data_map[ID_SYS_CPU_Clock] != "")
             {
-                  CPU_Clock = atoi(sys_date_map[ID_SYS_CPU_Clock].c_str());
+                  CPU_Clock = atoi(all_data_map[ID_SYS_CPU_Clock].c_str());
                   IsHave_CPU_Clock = 1;
             }
 
-            if (sys_date_map[ID_SYS_CPU_Used] != "")
+            if (all_data_map[ID_SYS_CPU_Used] != "")
             {
-                  CPU_Used = atoi(sys_date_map[ID_SYS_CPU_Used].c_str());
+                  CPU_Used = atoi(all_data_map[ID_SYS_CPU_Used].c_str());
                   IsHave_CPU_Used = 1;
             }
 
-            if (sys_date_map[ID_SYS_Memory_Used] != "")
+            if (all_data_map[ID_SYS_Memory_Used] != "")
             {
-                  Memory_Used = atoi(sys_date_map[ID_SYS_Memory_Used].c_str());
+                  Memory_Used = atoi(all_data_map[ID_SYS_Memory_Used].c_str());
                   IsHave_Memory_Used = 1;
             }
 
-            if (sys_date_map[ID_SYS_GPU_Used] != "")
+            if (all_data_map[ID_SYS_GPU_Used] != "")
             {
-                  GPU_Used = atoi(sys_date_map[ID_SYS_GPU_Used].c_str());
+                  GPU_Used = atoi(all_data_map[ID_SYS_GPU_Used].c_str());
                   IsHave_GPU_Used = 1;
             }
             //=======================================temp
             IsHave_Temp_CPU = 0;
             IsHave_Temp_GPUDiode = 0;
-            if (temp_date_map[ID_TEMP_Temp_CPU] != "")
+            if (all_data_map[ID_TEMP_Temp_CPU] != "")
             {
-                  Temp_CPU = atoi(temp_date_map[ID_TEMP_Temp_CPU].c_str());
+                  Temp_CPU = atoi(all_data_map[ID_TEMP_Temp_CPU].c_str());
                   IsHave_Temp_CPU = 1;
             }
 
-            if (temp_date_map[ID_TEMP_Temp_GPUDiode] != "")
+            if (all_data_map[ID_TEMP_Temp_GPUDiode] != "")
             {
-                  Temp_GPUDiode = atoi(temp_date_map[ID_TEMP_Temp_GPUDiode].c_str());
+                  Temp_GPUDiode = atoi(all_data_map[ID_TEMP_Temp_GPUDiode].c_str());
                   IsHave_Temp_GPUDiode = 1;
             }
 
             //=======================================volt
             IsHave_Volt_CPU_Core = 0;
             IsHave_Volt_GPU_Core = 0;
-            if (volt_date_map[ID_VOLT_Volt_CPU_Core] != "")
+            if (all_data_map[ID_VOLT_Volt_CPU_Core] != "")
             {
-                  Volt_CPU_Core = atof(volt_date_map[ID_VOLT_Volt_CPU_Core].c_str());
+                  Volt_CPU_Core = atof(all_data_map[ID_VOLT_Volt_CPU_Core].c_str());
                   IsHave_Volt_CPU_Core = 1;
             }
 
-            if (volt_date_map[ID_VOLT_Volt_GPU_Core] != "")
+            if (all_data_map[ID_VOLT_Volt_GPU_Core] != "")
             {
-                  Volt_GPU_Core = atof(volt_date_map[ID_VOLT_Volt_GPU_Core].c_str());
+                  Volt_GPU_Core = atof(all_data_map[ID_VOLT_Volt_GPU_Core].c_str());
                   IsHave_Volt_GPU_Core = 1;
             }
 
             //=======================================pwr
             IsHave_Pwr_CPU_Package = 0;
             IsHave_Pwr_Battery = 0;
-            if (pwr_date_map[ID_PWR_Pwr_CPU_Package] != "")
+            if (all_data_map[ID_PWR_Pwr_CPU_Package] != "")
             {
-                  Pwr_CPU_Package = atof(pwr_date_map[ID_PWR_Pwr_CPU_Package].c_str());
+                  Pwr_CPU_Package = atof(all_data_map[ID_PWR_Pwr_CPU_Package].c_str());
                   IsHave_Pwr_CPU_Package = 1;
             }
 
-            if (pwr_date_map[ID_PWR_Pwr_Battery] != "")
+            if (all_data_map[ID_PWR_Pwr_Battery] != "")
             {
-                  Pwr_Battery = atof(pwr_date_map[ID_PWR_Pwr_Battery].c_str());
+                  Pwr_Battery = atof(all_data_map[ID_PWR_Pwr_Battery].c_str());
                   IsHave_Pwr_Battery = 1;
             }
 
